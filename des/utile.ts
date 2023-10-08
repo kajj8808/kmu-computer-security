@@ -34,3 +34,20 @@ export function asciiTo64BitBinary(input: string): string {
   }
   return binaryText;
 }
+import fs from "fs";
+
+interface ISaveFile {
+  text: string;
+  saveType: "cipher" | "plain";
+}
+export function saveFile({ text, saveType }: ISaveFile) {
+  if (saveType === "cipher") {
+    console.log(`cipher Text: ${text}`);
+    fs.writeFileSync("resources/test.enc", text);
+    console.log("cipher Text  저장 완료!");
+  } else {
+    console.log(`plain text: ${text}`);
+    fs.writeFileSync("resources/test_1.txt", text, "ascii");
+    console.log("plaintext 저장 완료!");
+  }
+}
