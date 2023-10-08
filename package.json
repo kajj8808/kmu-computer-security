@@ -10,8 +10,5 @@
   },
   "scripts": {
     "dev": "bun --watch index.ts"
-  },
-  "dependencies": {
-    "crypto": "^1.0.1"
   }
 }
