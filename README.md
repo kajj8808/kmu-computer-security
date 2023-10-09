@@ -28,6 +28,11 @@ bun install
 bun run dev
 ```
 
+## 사용 방법
+
+1. resources 폴더 내에 암호자 하고자하는 파일 test.txt 를 넣습니다.
+2. bun run dev 를 통해 프로그램을 실행합니다.
+
 ## 기능 구현
 
 - [x] 초기 치환 (Initial Permutation)
