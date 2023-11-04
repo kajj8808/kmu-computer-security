@@ -42,12 +42,13 @@ interface ISaveFile {
 }
 export function saveFile({ text, saveType }: ISaveFile) {
   if (saveType === "cipher") {
-    console.log(`cipher Text: ${text}`);
+    console.log(`Cipher Text: ${text}`);
     fs.writeFileSync("resources/test.enc", text);
-    console.log("cipher Text  저장 완료!");
+    console.log("Cipher Text  저장 완료!");
   } else {
-    console.log(`plain text: ${text}`);
-    fs.writeFileSync("resources/test_1.txt", text, "ascii");
-    console.log("plaintext 저장 완료!");
+    console.log(`Plain Text: ${text}`);
+    const cleanText = text.trim();
+    fs.writeFileSync("resources/test_1.txt", cleanText, "ascii");
+    console.log("Plain Text 저장 완료!");
   }
 }
