@@ -1,7 +1,3 @@
-let SERVER_PUBLIC_KEY = ""; // final
-let PUBLIC_KEY; // final
-let PRIVATE_KEY; // final
-
 /**
  * PEM 형식의 CryptoKey 변환 함수
  * @param {string} pemKey - PEM 형식의 공개 키.

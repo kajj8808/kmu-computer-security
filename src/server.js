@@ -67,7 +67,20 @@ wsServer.on("connection", (socket) => {
     socket.to(roomName).emit("welcome");
     done();
   });
+  // 2. create offer
+  socket.on("offer", (offer, roomName) => {
+    // 3.을 진행하기 위해 offer 상대방에게 전송
+    socket.to(roomName).emit("offer", offer);
+  });
+  // 3.create Answer  -> send answer
+  socket.on("answer", (answer, roomName) => {
+    socket.to(roomName).emit("answer", answer);
+  });
+  // 4
+  socket.on("ice", (ice, roomName) => {
+    socket.to(roomName).emit("ice", ice);
+  });
 });
 
-const handleListen = () => console.log(`Listening on http://localhost:3000`);
-httpServer.listen(3000, handleListen);
+const handleListen = () => console.log(`Listening on http://localhost:3010`);
+httpServer.listen(3010, handleListen);
