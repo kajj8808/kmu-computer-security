@@ -73,4 +73,5 @@ async function cryptoInit() {
   ).json();
   SERVER_PUBLIC_KEY = public_key;
   socket.emit("init", setClientKeys);
+  socket.emit("test");
 }

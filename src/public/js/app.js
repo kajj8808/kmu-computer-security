@@ -16,16 +16,21 @@ let myStream;
 let myPeerConnection;
 let myDataChannel;
 
-function startChat() {
+function showChatRoom() {
   welcome.hidden = true;
   chat.hidden = false;
   makeConnection();
+}
+function toggleChatInput() {
+  chatForm.querySelector("button").disabled = false;
+  chatForm.querySelector("input").focus();
+  chatWaitText.hidden = true;
 }
 
 function handleWelcomeSubmit(event) {
   event.preventDefault();
   const input = welcomeForm.querySelector("input");
-  socket.emit("join_room", input.value, startChat);
+  socket.emit("join_room", input.value, showChatRoom);
   roomName = input.value;
   input.value = "";
 }
@@ -69,6 +74,7 @@ socket.on("welcome", async () => {
   socket.emit("offer", offer, roomName);
 });
 
+// 상대 키 휙득
 socket.on("user-public-key", async ({ originalPublicKey, signedPublicKey }) => {
   const currentSign = await verifySignedText({
     originalText: originalPublicKey,
@@ -102,8 +108,11 @@ socket.on("answer", (answer) => {
 socket.on("ice", (ice) => {
   //console.log("recive ice");
   myPeerConnection.addIceCandidate(ice);
-  chatForm.querySelector("button").disabled = false;
-  chatWaitText.hidden = true;
+  toggleChatInput();
+});
+
+socket.on("keys", (keys) => {
+  console.log(keys.publicKey);
 });
 
 function makeConnection() {
@@ -131,5 +140,3 @@ function handleIce(data) {
 
 // crypto.js
 cryptoInit();
-
-socket.emit("test");

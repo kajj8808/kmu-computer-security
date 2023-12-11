@@ -49,7 +49,7 @@ function generateClientKeys() {
 
 wsServer.on("connection", (socket) => {
   socket.on("test", () => {
-    const originalPublicKey = PUBLIC_KEY;
+    const originalPublicKey = socket.keys.publicKey;
     const signedPublicKey = crypto
       .sign("SHA256", originalPublicKey, PRIVATE_KEY)
       .toString("base64");
@@ -79,6 +79,7 @@ wsServer.on("connection", (socket) => {
   // 4
   socket.on("ice", (ice, roomName) => {
     socket.to(roomName).emit("ice", ice);
+    socket.to(roomName).emit("keys", socket.keys);
   });
 });
 
