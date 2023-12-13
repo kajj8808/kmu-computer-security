@@ -7,32 +7,30 @@ import crypto from "crypto";
 const app = express();
 
 const serverRSA = new nodeRSA({ b: 2048 });
-const PUBLIC_KEY = serverRSA.exportKey("public");
-const PRIVATE_KEY = serverRSA.exportKey("private");
 
-//console.log(`public key : ${serverRSA.exportKey("public")}`);
-
-/* const signText = crypto.sign("SHA256", "Hello", serverRSA.exportKey("private"));
-console.log(signText);
-
-const verti = crypto.verify(
-  "SHA256",
-  "Hello",
-  serverRSA.exportKey("public"),
-  signText
-);
-console.log(verti); */
+// 1. 서버(인증기관)는 자신의 공개키/개인키를 생성하여 보관한다.
+const serverPublicKey = serverRSA.exportKey("public");
+const serverPrivateKey = serverRSA.exportKey("private");
+console.log(`서버 공개키\n ${serverPublicKey}\n`);
+console.log(`서버 개인키\n ${serverPrivateKey}\n`);
 
 app.set("view engine", "pug");
 app.set("views", __dirname + "/views");
 app.use("/public", express.static(__dirname + "/public"));
 app.get("/", (_, res) => res.render("home"));
-app.get("/public-key", (_, res) => res.send({ public_key: PUBLIC_KEY }));
+app.get("/public-key", (_, res) => res.send({ public_key: serverPublicKey }));
 
 app.get("/*", (_, res) => res.redirect("/"));
 
 const httpServer = http.createServer(app);
 const wsServer = SocketIO(httpServer);
+
+function signText(text) {
+  const signedText = crypto
+    .sign("SHA256", text, serverPrivateKey)
+    .toString("base64");
+  return signedText;
+}
 
 function generateClientKeys() {
   // client keys
@@ -41,22 +39,15 @@ function generateClientKeys() {
   const privateKey = clientRSA.exportKey("private");
   // sign
   const signedText = crypto
-    .sign("SHA256", publicKey + privateKey, PRIVATE_KEY)
+    .sign("SHA256", publicKey + privateKey, serverPrivateKey)
     .toString("base64");
   const keys = { publicKey, privateKey, signedText };
   return keys;
 }
 
 wsServer.on("connection", (socket) => {
-  socket.on("test", () => {
-    const originalPublicKey = socket.keys.publicKey;
-    const signedPublicKey = crypto
-      .sign("SHA256", originalPublicKey, PRIVATE_KEY)
-      .toString("base64");
-    socket.emit("user-public-key", { originalPublicKey, signedPublicKey });
-  });
-
   socket.on("init", (setKeys) => {
+    // 2. 서버는 앨리스와 밥의 공개키/개인키를 발급하여 전달한다.
     const keys = generateClientKeys();
     socket.keys = keys;
     setKeys(keys);
@@ -76,10 +67,17 @@ wsServer.on("connection", (socket) => {
   socket.on("answer", (answer, roomName) => {
     socket.to(roomName).emit("answer", answer);
   });
-  // 4
   socket.on("ice", (ice, roomName) => {
-    socket.to(roomName).emit("ice", ice);
-    socket.to(roomName).emit("keys", socket.keys);
+    //3. 앨리스와 밥이 서버에 동시에 접속하면,
+    //   서버는 앨리스에게 밥의 공개키, 서버의 공개키,
+    //   밥의 공개키에 대한 서명값을 전달한다.
+    //   동일하게 밥에게는 앨리스의 공개키, 서버의 공개키, 앨리스의 공개키에 대한 서명값을 전달한다.
+    const publicKey = socket.keys.publicKey;
+    socket.to(roomName).emit("ice", ice); // 동시 접속 ( 서로의 위치를 확인하고 연결 )
+    socket.to(roomName).emit("peer_public_key", {
+      publicKey: publicKey,
+      signedPublicKey: signText(publicKey),
+    }); // 서로의 키 전달
   });
 });
 

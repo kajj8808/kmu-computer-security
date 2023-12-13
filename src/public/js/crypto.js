@@ -17,7 +17,6 @@ async function importPublicKey(pemKey) {
     false,
     ["verify"]
   );
-
   return publicKey;
 }
 
@@ -34,8 +33,8 @@ async function verifySignedText({ signedText, originalText }) {
     name: "RSASSA-PKCS1-v1_5",
     hash: { name: "SHA-256" },
   };
-
-  const publicKey = await importPublicKey(SERVER_PUBLIC_KEY);
+  const serverPublicKey = await getServerPublicKey();
+  const publicKey = await importPublicKey(serverPublicKey);
 
   const signedPublicKeyBuffer = base64ToBuffer(signedText);
   const dataBuffer = new TextEncoder().encode(originalText).buffer;
@@ -50,28 +49,52 @@ async function verifySignedText({ signedText, originalText }) {
   return result;
 }
 
+/**
+ * App에서 사용할 키를 발급받습니다.
+ * @param {Object} params
+ * @param {string} params.publicKey - 공개키
+ * @param {string} params.privateKey - 개인키
+ * @param {string} params.signedText - publickey + privatekey를 합친후 서명을 한 text
+ * @returns
+ *
+ */
 async function setClientKeys({ publicKey, privateKey, signedText }) {
   const currentKeys = await verifySignedText({
     originalText: publicKey + privateKey,
     signedText,
   });
+
   if (currentKeys) {
-    PUBLIC_KEY = publicKey;
-    PRIVATE_KEY = privateKey;
+    console.log(`서버로 부터 받은 개인 키 \n ${privateKey} \n`);
+    console.log(`서버로 부터 받은 공개 키 \n ${publicKey} \n`);
+    clientPublicKey = publicKey;
+    clientPrivateKey = privateKey;
   } else {
     // 정상적인 key 가 아닐경우 입장을 막습니다.
     welcomeForm.querySelector("button").disabled = true;
   }
 }
 
-async function cryptoInit() {
-  // pki 서버에서 public를 얻어옵니다.
+async function getServerPublicKey() {
   const { public_key } = await (
     await fetch("/public-key", {
       method: "get",
     })
   ).json();
-  SERVER_PUBLIC_KEY = public_key;
-  socket.emit("init", setClientKeys);
-  socket.emit("test");
+  return public_key;
+}
+
+function encryptText(text, publicKeyPEM) {
+  console.log(publicKeyPEM);
+  const publicKey = new JSEncrypt();
+  publicKey.setPublicKey(publicKeyPEM);
+  const encrypted = publicKey.encrypt(text);
+  return encrypted;
+}
+
+function decryptText(encryptedText, privateKeyPEM) {
+  const privateKey = new JSEncrypt();
+  privateKey.setPrivateKey(privateKeyPEM);
+  const decryptText = privateKey.decrypt(encryptedText);
+  return decryptText;
 }
