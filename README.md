@@ -5,6 +5,7 @@ PKI 환경에서 공개키(RSA)를 활용한 채팅 프로그램
 ## 개발환경
 
 - Node.js: [버전 18.17.0](https://nodejs.org/en)
+- Pug: [버전 3.0.2](https://nodejs.org/en](https://pugjs.org/api/getting-started.html))
 
 ## 설치 방법
 
