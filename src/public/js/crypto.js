@@ -85,7 +85,6 @@ async function getServerPublicKey() {
 }
 
 function encryptText(text, publicKeyPEM) {
-  console.log(publicKeyPEM);
   const publicKey = new JSEncrypt();
   publicKey.setPublicKey(publicKeyPEM);
   const encrypted = publicKey.encrypt(text);

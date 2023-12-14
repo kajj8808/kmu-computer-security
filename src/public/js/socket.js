@@ -11,7 +11,12 @@ socket.on("welcome", async () => {
   myDataChannel = myPeerConnection.createDataChannel("chat");
   myDataChannel.addEventListener("message", (event) => {
     // peer a가 메세지를 받는 경우
-    console.log(`peer b: ${event.data}`);
+    console.log(
+      `peer b: ${event.data}\n복호화된 메세지${decryptText(
+        event.data,
+        clientPrivateKey
+      )}`
+    );
 
     addChat({
       message: decryptText(event.data, clientPrivateKey),
@@ -31,7 +36,12 @@ socket.on("offer", async (offer) => {
     // peer b가 메세지를 받는 경우
     myDataChannel = event.channel;
     myDataChannel.addEventListener("message", (event) => {
-      console.log(`peer a: ${event.data}`);
+      console.log(
+        `peer a: ${event.data}\n복호화된 메세지${decryptText(
+          event.data,
+          clientPrivateKey
+        )}`
+      );
       addChat({
         message: decryptText(event.data, clientPrivateKey),
         isMe: false,
@@ -60,7 +70,13 @@ socket.on("peer_public_key", async ({ signedPublicKey, publicKey }) => {
     signedText: signedPublicKey,
     originalText: publicKey,
   });
+  // 서명 확인후 peerPublicKey에 할당
   if (currentPublicKey) {
+    const serverPublicKey = await getServerPublicKey();
+    console.log(`서버 공개키\n${serverPublicKey}`);
+    console.log(`상대peer의 공개키\n${publicKey}`);
+    console.log(`상대peer의 공개키에 대한 서명\n${publicKey}`);
+    console.log(`정상적인 공개키 ${currentPublicKey}`);
     peerPublicKey = publicKey;
   }
 });
