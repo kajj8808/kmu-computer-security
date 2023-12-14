@@ -11,6 +11,8 @@ socket.on("welcome", async () => {
   myDataChannel = myPeerConnection.createDataChannel("chat");
   myDataChannel.addEventListener("message", (event) => {
     // peer a가 메세지를 받는 경우
+    console.log(`peer b: ${event.data}`);
+
     addChat({
       message: decryptText(event.data, clientPrivateKey),
       isMe: false,
@@ -29,6 +31,7 @@ socket.on("offer", async (offer) => {
     // peer b가 메세지를 받는 경우
     myDataChannel = event.channel;
     myDataChannel.addEventListener("message", (event) => {
+      console.log(`peer a: ${event.data}`);
       addChat({
         message: decryptText(event.data, clientPrivateKey),
         isMe: false,

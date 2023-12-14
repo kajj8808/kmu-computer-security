@@ -1,6 +1,17 @@
 ul {
   list-style: none;
+  height: 40vh;
 }
+ul li span {
+  background-color: #f1f2f3;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+.reverse span {
+  background-color: #f1f2f3;
+}
+
 .reverse {
   width: 100%;
   display: flex;

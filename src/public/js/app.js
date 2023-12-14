@@ -44,7 +44,7 @@ function addChat({ message, isMe }) {
   const li = document.createElement("li");
   const span = document.createElement("span");
   span.innerText = message;
-  span.classList.add(isMe ? "reverse" : "normal");
+  li.classList.add(isMe ? "reverse" : "normal");
   li.appendChild(span);
   chatList.appendChild(li);
 }
