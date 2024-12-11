@@ -14,6 +14,26 @@
 
 5. 서버로 부터 보낸 사실이 확인되면 앨리스와 밥은 상대방의 공개키를 사용하여 메시지를 암호화하여 서버를 통해 상대방에게 전달하고, 메시지를 받은 사용자를 자신의 개인키를 사용하여 복호화 한다.
 
+## 개발환경
+
+- Typescript: [버전 5.0](https://www.npmjs.com/package/typescript?activeTab=readme)
+
+- Bun: [버전 1.0.2](https://www.npmjs.com/package/bun/v/1.0.2)
+
+## 설치 방법
+
+필요한 typescript와 bun-type 패키지를 아래 명령어로 설치하세요:
+
+```bash
+bun install
+```
+
+개발 모드로 실행하려면:
+
+```bash
+bun run dev
+```
+
 ### Client 동작 시나리오
 
 - [x] 1. 웹 페이지 접속
@@ -33,22 +53,23 @@
 - [x] Peer Connection ( WEB RTC )
 - [x] Chat ( Data Channel )
 
-### WebRTC
+### WebRTC (간단 정리)
 
 - peer to peer 방식으로 동작
 - 브라우저 끼리 연결되어 값을 교환하는 방식
 - ws 과 다른점 (ws은 서버에 값을 전달하고 서버가 그 메세지를 전달해주는 방식)
 - audio 데이터나 video 파일 같이 파일 크기가 큰 파일들을 공유하는데 사용하는게 대표적인 사용방식. (실제로 서버로 값이 넘어가지 않기때문에 서버사용량을 줄일수 있음)
 
-### etc?
-
-- https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
-- atob
-- STUN Server(STUN 서버는 컴퓨터가 공용 IP를 찾게 해줌.)
-
-### WEB RTC
+### WEB RTC (구현)
 
 1. 커넥션 생성 (myPeerConnection = new RTCPeerConnection());
 2. create offer {peer a} ( const offer = await myPeerConnection.createOffer();)
 3. create Answer {peer b}
 4. ice candidate (인터넷 연결 생성)
+
+### 참조
+
+- https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
+- atob
+- STUN Server(STUN 서버는 컴퓨터가 공용 IP를 찾게 해줌.)
+
