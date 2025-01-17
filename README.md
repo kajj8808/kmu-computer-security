@@ -14,6 +14,9 @@
 
 5. 서버로 부터 보낸 사실이 확인되면 앨리스와 밥은 상대방의 공개키를 사용하여 메시지를 암호화하여 서버를 통해 상대방에게 전달하고, 메시지를 받은 사용자를 자신의 개인키를 사용하여 복호화 한다.
 
+## Demo Video
+- [Youtube](https://www.youtube.com/embed/wHsK-u1tIVc?feature=oembed)
+
 ## 개발환경
 
 - Typescript: [버전 5.0](https://www.npmjs.com/package/typescript?activeTab=readme)
